@@ -28,6 +28,7 @@
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, validator
+from fastapi.middleware import CORSMiddleware
 import joblib
 import numpy as np
 
@@ -37,6 +38,12 @@ app = FastAPI(
     version="1.0.0",
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 # Load model once at startup
 model = joblib.load("model.pkl")
 
