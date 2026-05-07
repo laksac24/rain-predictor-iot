@@ -46,6 +46,7 @@ app.add_middleware(
 )
 # Load model once at startup
 model = joblib.load("model.pkl")
+latest_prediction = {}
 
 
 # --- Schemas ---
@@ -108,10 +109,19 @@ def health():
 
 @app.post("/predict", response_model=PredictResponse, summary="Single prediction")
 def predict(body: PredictRequest):
-    """
-    Predict rain for a single (temperature, humidity) pair.
-    """
-    return build_response(body.temperature, body.humidity)
+
+    global latest_prediction
+
+    result = build_response(body.temperature, body.humidity)
+
+    latest_prediction = {
+        "temperature": body.temperature,
+        "humidity": body.humidity,
+        "will_rain": result.will_rain,
+        "probability_of_rain": result.probability_of_rain
+    }
+
+    return result
 
 
 @app.post("/predict/batch", response_model=BatchPredictResponse, summary="Batch prediction")
@@ -121,3 +131,14 @@ def predict_batch(body: BatchPredictRequest):
     """
     results = [build_response(s.temperature, s.humidity) for s in body.samples]
     return BatchPredictResponse(results=results, total=len(results))
+
+@app.get("/latest")
+def latest():
+
+    if not latest_prediction:
+        raise HTTPException(
+            status_code=404,
+            detail="No prediction data available yet"
+        )
+
+    return latest_prediction
