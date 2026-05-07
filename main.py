@@ -27,7 +27,7 @@
 
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from fastapi.middleware import CORSMiddleware
 import joblib
 import numpy as np
@@ -55,7 +55,8 @@ class PredictRequest(BaseModel):
     temperature: float = Field(..., description="Temperature in Celsius", example=22.5)
     humidity: float = Field(..., description="Relative humidity in percent (0–100)", example=85.0)
 
-    @validator("humidity")
+    @field_validator("humidity")
+    @classmethod
     def humidity_range(cls, v):
         if not (0 <= v <= 100):
             raise ValueError("humidity must be between 0 and 100")
