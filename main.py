@@ -28,7 +28,7 @@
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, field_validator
-from fastapi.middleware import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import numpy as np
 
