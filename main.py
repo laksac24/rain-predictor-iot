@@ -286,9 +286,9 @@ Please take precautions.
 
         # ===== CONNECT SMTP =====
 
-        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
 
-        server.starttls()
+        # server.starttls()
 
         server.login(EMAIL_USER, EMAIL_PASSWORD)
 
